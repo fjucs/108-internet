@@ -3,38 +3,38 @@
 LiquidCrystal_I2C lcd(0x27, 0x20,0x2);	// lcd set
 
 long duration, dis;
-int echoPin = 9;						// the pin of Ultrasonic echo
-int triPin = 10;						// the pin of Ultrasonic tri
-int soundPin = 5;						// the pin of buzzer
+int echoPin = 9;						    // the pin of Ultrasonic echo
+int trigPin = 10;						    // the pin of Ultrasonic tri
+int soundPin = 11;						  // the pin of buzzer
 int pred = 0, light_f = 0, sound_f = 0;
 
 void setup(){
-	lcd. init();						// LCD init
-	lcd. backlight();					// open backlight
+	lcd.init();						        // LCD init
+	lcd.backlight();					    // open backlight
 	for( int i = 2; i <= 4; i++ ){
-		pinMode(i, OUTPUT);				// LED output
+		pinMode(i, OUTPUT);				  // LED output
 	}
-	pinMode(triPin, OUTPUT);			// Ultrasonic output
+	pinMode(trigPin, OUTPUT);			// Ultrasonic output
 	pinMode(echoPin, INPUT);			// Ultrasonic input
-	pinMode(soundPin, OUTPUT);			// buzzer output
-	Serial.begin(9600);					// the link of computer
+	pinMode(soundPin, OUTPUT);		// buzzer output
+	Serial.begin(9600);					  // the link of computer
 }
 
 void soundOut( int d,bool same ){
-	if(!same){							// if the set of length is change, change the soundset
+	if(!same){							      // if the set of length is change, change the soundset
 		sound_f = 0;
 	}
-	if(d>=30){							// no sound, delay one second for break
+	if(d>=30){							      // no sound, delay one second for break
 		delay(1000);
 		return;
 	}
 	if(d<10){
-		tone(5,1466,1000);				// keep ringing
+		tone(soundPin,1466,1000);				  // keep ringing
 	}
-	else if(d<20){						// two second as a cycle, one second ring five time
-		if(sound_f==0){
+	else if(d<20){						    // two second as a cycle, one second ring five time
+		if(sound_f == 0){
 			for(int i=0;i<5;i++){
-				tone(5,1066+100*i,100);
+				tone(soundPin,1066+100*i,100);
 				delay(100);
 			}
 		}
@@ -43,7 +43,7 @@ void soundOut( int d,bool same ){
 		}
 		sound_f=(sound_f+1)%3;
 	}
-	else if(d<30){						// five second a cycle, one second ring five time
+	else if(d<30){						    // five second a cycle, one second ring five time
 		if(sound_f==0){
 			for(int i=0;i<5;i++){
 				tone(5,1066+100*i,100);
@@ -143,6 +143,6 @@ void loop(){
 	ultrasonicWork();
 	dis = (duration/2)/29.1;			// count out the length in CM
 	LCDOut(dis);
-	LEDOut(dis);
-	soundOut(dis);
+	LEDOut(dis, change_mode( dis, pred ));
+	soundOut(dis, change_mode( dis, pred ));
 }
